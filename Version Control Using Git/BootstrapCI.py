@@ -1,6 +1,6 @@
 '''
-Purpose: Classical vs Bootstrap confidence intervals when sample size is small
-and population is right skewed.
+Purpose: Compare Classical vs Bootstrap confidence intervals when sample size
+is small and population is right skewed.
 '''
 
 # Load packages
@@ -20,5 +20,3 @@ X = np.random.beta(shape_a, shape_b, 5000)
 seaborn.distplot(X)
 plt.title("Right Skewed Population Distribution")
 plt.show()
-
-
