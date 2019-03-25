@@ -13,13 +13,14 @@ import matplotlib.pyplot as plt
 shape_a = 1.5
 shape_b = 5
 alpha = 0.05
-n_sample = 20
-df = n_sample-1
+#n_sample = 20
+# df = n_sample-1
 n_sim = 10000
 pop_mean = shape_a/(shape_a+shape_b)
 
 # Lists for tracking
 t_coverage = []
+t_coverage_prob = []
 
 
 # Right skewed Population distribution
@@ -30,26 +31,38 @@ X = np.random.beta(shape_a, shape_b, 5000)
 #plt.title("Right Skewed Population Distribution")
 #plt.show()
 
-# Repeatedly sample from population
-for sim in range(n_sim):
 
-    # Draw a sample from Population
-    data = np.random.beta(shape_a, shape_b, n_sample)
+# Itterate over sample sizes
+for n_sample in range(10, 150):
 
-    ## Standard 95% CI
-    # CI components
-    sample_mean = np.mean(data)
-    sample_std = np.std(data)
-    margin_error = stats.t.ppf(1-alpha/2, df)*(sample_std/np.sqrt(n_sample))
+    # Degrees of freedom
+    df = n_sample-1
 
-    # Lower and upper bounds
-    CI_lower = sample_mean - margin_error
-    CI_upper = sample_mean + margin_error
-    #print("The 95% CI is: [" + str(CI_lower) + "," + str(CI_upper) + "]")
+    # Repeatedly sample from population
+    for sim in range(n_sim):
 
-    # Check whether CI covers true population mean
-    t_coverage.append(pop_mean <= CI_upper and pop_mean >= CI_lower)
+        # Draw a sample from Population
+        data = np.random.beta(shape_a, shape_b, n_sample)
 
-# Print coverage probability for student t 95% CI
-t_coverage_prob = np.mean(t_coverage)
-print("Student t 95% CI coverage probability: " + str(t_coverage_prob))
+        ## Standard 95% CI
+        # CI components
+        sample_mean = np.mean(data)
+        sample_std = np.std(data)
+        margin_error = stats.t.ppf(1-alpha/2, df)*(sample_std/np.sqrt(n_sample))
+
+        # Lower and upper bounds
+        CI_lower = sample_mean - margin_error
+        CI_upper = sample_mean + margin_error
+        #print("The 95% CI is: [" + str(CI_lower) + "," + str(CI_upper) + "]")
+
+        # Check whether CI covers true population mean
+        t_coverage.append(pop_mean <= CI_upper and pop_mean >= CI_lower)
+
+    # Store coverage probability for student t 95% CI
+    t_coverage_prob.append(np.mean(t_coverage))
+    # print("Student t 95% CI coverage probability: " + str(t_coverage_prob))
+
+# Scatter plot of sample size and covarage probability
+ax = seaborn.scatterplot(range(10, 150), t_coverage_prob)
+ax.set(xlabel = "Sample Size", ylabel= "Probability of Covering True Mean", title = "Coverage Probability and Sample Size")
+plt.show()
