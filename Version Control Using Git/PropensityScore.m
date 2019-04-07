@@ -12,13 +12,15 @@ cd('/Users/hammadshaikh/Documents/GitHub/Tools-and-Documents-for-Researchers/Ver
 % Load birth weight data
 BirthWeightData = csvread('BirthWeightSmoking.csv',1,0);
 
+
 % Data variables
 birth_weight = BirthWeightData(:,1);
 prop_score = BirthWeightData(:,2);
 mother_smoke = BirthWeightData(:,3);
+nsize = size(mother_smoke);
 
 % Descriptive analysis
-X = [ones(size(mother_smoke))  mother_smoke];
+X = [ones(nsize)  mother_smoke];
 y = birth_weight;
 
 % OLS regression
@@ -31,5 +33,16 @@ bar(xlabel, barplot_data)
 ylabel("Infant Birth Weight (Grams)", 'FontSize',16)
 title("Birth Weight and Mother Smoker Status", 'FontSize',16)
 
+% Homoscedastic standard errors
+% Generate residuals
+e = y - X*beta_hat;
+
+% Covariance matrix
+sigma_sq = (1/(nsize(1)-2))*sum(e.^2);
+VCov = sigma_sq*inv(X'*X);
+
+% Standard errors
+b0_se = sqrt(VCov(1,1));
+b1_se = sqrt(VCov(2,2));
 
 
