@@ -54,7 +54,14 @@ inv_prob_weight(mother_smoke ==0) = 1./(1-prop_score(mother_smoke ==0));
 WSSE = @(beta)OLSWeighted(birth_weight, X,inv_prob_weight,beta);
 
 % Find inverse propensity weight regression estimates
-inv_prop_ols = fminunc(WSSE, beta_hat)
+inv_prop_ols = fminunc(WSSE, beta_hat);
+
+% Bar plot illustrating effect of smoking
+xlabel = categorical({'non-smoker','smoker'});
+barplot_data = [beta_hat(1) inv_prop_ols(1);(beta_hat(1)+beta_hat(2)) (inv_prop_ols(1) + inv_prop_ols(2))];
+bar(xlabel, barplot_data)
+ylabel("Infant Birth Weight (Grams)", 'FontSize',16)
+title("Birth Weight and Mother Smoker Status", 'FontSize',16)
 
 % OLS with weighted outcome
 y_weighted = zeros(nsize);
