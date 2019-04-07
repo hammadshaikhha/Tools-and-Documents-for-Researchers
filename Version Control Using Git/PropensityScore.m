@@ -52,3 +52,8 @@ y_weighted_notsmoke = y(mother_smoke == 0)./(1-prop_score(mother_smoke == 0));
 % Compute ATE
 ATE_prop_weight = mean(y_weighted_smoke) - mean(y_weighted_notsmoke);
 
+% OLS with weighted outcome
+y_weighted = zeros(nsize);
+y_weighted(mother_smoke == 1) = y_weighted_smoke;
+y_weighted(mother_smoke == 0) = y_weighted_notsmoke;
+beta_hat = inv(X'*X)*X'*y_weighted;
