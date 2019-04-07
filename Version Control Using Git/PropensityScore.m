@@ -62,9 +62,3 @@ barplot_data = [beta_hat(1) inv_prop_ols(1);(beta_hat(1)+beta_hat(2)) (inv_prop_
 bar(xlabel, barplot_data)
 ylabel("Infant Birth Weight (Grams)", 'FontSize',16)
 title("Birth Weight and Mother Smoker Status", 'FontSize',16)
-
-% OLS with weighted outcome
-y_weighted = zeros(nsize);
-y_weighted(mother_smoke == 1) = y_weighted_smoke;
-y_weighted(mother_smoke == 0) = y_weighted_notsmoke;
-beta_hat = inv(X'*X)*X'*y_weighted;
