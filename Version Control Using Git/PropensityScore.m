@@ -45,4 +45,10 @@ VCov = sigma_sq*inv(X'*X);
 b0_se = sqrt(VCov(1,1));
 b1_se = sqrt(VCov(2,2));
 
+% Propensity score weighting
+y_weighted_smoke = y(mother_smoke == 1)./prop_score(mother_smoke == 1);
+y_weighted_notsmoke = y(mother_smoke == 0)./(1-prop_score(mother_smoke == 0));
+
+% Compute ATE
+ATE_prop_weight = mean(y_weighted_smoke) - mean(y_weighted_notsmoke);
 
