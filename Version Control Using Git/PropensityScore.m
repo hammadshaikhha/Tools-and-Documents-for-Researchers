@@ -56,6 +56,18 @@ WSSE = @(beta)OLSWeighted(birth_weight, X,inv_prob_weight,beta);
 % Find inverse propensity weight regression estimates
 inv_prop_ols = fminunc(WSSE, beta_hat);
 
+% Hetroscedastic robust standard errors
+% Generate residuals
+X_weighted = X.*sqrt(inv_prob_weight);
+e_robust = y.*sqrt(inv_prob_weight) - X_weighted*inv_prop_ols;
+
+% Hetro. robust cov-matrix
+V_robust = inv(X_weighted'*X_weighted)*(X_weighted'*diag(e_robust.^2)*X_weighted)*inv(X_weighted'*X_weighted);
+
+% Robust standard errors
+b0_se_robust = sqrt(V_robust(1,1));
+b1_se_robust = sqrt(V_robust(2,2));
+
 % Bar plot illustrating effect of smoking
 xlabel = categorical({'non-smoker','smoker'});
 barplot_data = [beta_hat(1) inv_prop_ols(1);(beta_hat(1)+beta_hat(2)) (inv_prop_ols(1) + inv_prop_ols(2))];
