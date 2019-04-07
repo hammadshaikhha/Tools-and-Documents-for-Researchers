@@ -27,11 +27,11 @@ y = birth_weight;
 beta_hat = inv(X'*X)*X'*y;
 
 % Bar plot illustrating effect of smoking
-xlabel = categorical({'non-smoker','smoker'});
-barplot_data = [beta_hat(1),beta_hat(1)+beta_hat(2)];
-bar(xlabel, barplot_data)
-ylabel("Infant Birth Weight (Grams)", 'FontSize',16)
-title("Birth Weight and Mother Smoker Status", 'FontSize',16)
+%xlabel = categorical({'non-smoker','smoker'});
+%barplot_data = [beta_hat(1),beta_hat(1)+beta_hat(2)];
+%bar(xlabel, barplot_data)
+%ylabel("Infant Birth Weight (Grams)", 'FontSize',16)
+%title("Birth Weight and Mother Smoker Status", 'FontSize',16)
 
 % Homoscedastic standard errors
 % Generate residuals
@@ -45,12 +45,16 @@ VCov = sigma_sq*inv(X'*X);
 b0_se = sqrt(VCov(1,1));
 b1_se = sqrt(VCov(2,2));
 
-% Propensity score weighting
-y_weighted_smoke = y(mother_smoke == 1)./prop_score(mother_smoke == 1);
-y_weighted_notsmoke = y(mother_smoke == 0)./(1-prop_score(mother_smoke == 0));
+% Define ATE weight
+inv_prob_weight = zeros(nsize);
+inv_prob_weight(mother_smoke ==1) = 1./prop_score(mother_smoke ==1);
+inv_prob_weight(mother_smoke ==0) = 1./(1-prop_score(mother_smoke ==0));
 
-% Compute ATE
-ATE_prop_weight = mean(y_weighted_smoke) - mean(y_weighted_notsmoke);
+% Render weight SSE as function of beta
+WSSE = @(beta)OLSWeighted(birth_weight, X,inv_prob_weight,beta);
+
+% Find inverse propensity weight regression estimates
+inv_prop_ols = fminunc(WSSE, beta_hat)
 
 % OLS with weighted outcome
 y_weighted = zeros(nsize);
